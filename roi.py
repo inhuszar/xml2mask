@@ -154,13 +154,7 @@ def process(xmlfile, *xmlfiles, **options):
 
                 # Display selection
                 if p.display:
-                    ex, ey = selection.exterior.xy
-                    plt.figure()
-                    plt.plot(np.asarray(ex), -np.asarray(ey))
-                    for interior in selection.interiors:
-                        ix, iy = interior.xy
-                        plt.plot(np.asarray(ix), -np.asarray(iy))
-                    plt.show()
+                    visualise_polygon(selection, show=True, save=False)
 
                 # Export the polygonal selection object to a binary file
                 if p.bin:
@@ -174,7 +168,8 @@ def process(xmlfile, *xmlfiles, **options):
                     elif len(p.scale) == 2:
                         scale_x, scale_y = p.scale  # p.scale is a tuple!
                     else:
-                        raise ValueError("The number of scaling factors must be 2.")
+                        raise ValueError(
+                            "The number of scaling factors must be 2.")
                     mask = create_mask(
                         selection, original_shape=p.original_shape,
                         target_shape=p.target_shape, scale_x=scale_x,
@@ -186,8 +181,8 @@ def process(xmlfile, *xmlfiles, **options):
                     # Save binary mask
                     Image.fromarray(mask).save(
                         os.path.join(layerbase + "_mask.tif"))
-        except Exception:
-            logger.critical("FAILURE: {}".format(f))
+        except Exception as exc:
+            logger.critical("FAILURE: {}. Exception: {}".format(f, exc.args[0]))
             err += 1
             continue
 
@@ -314,8 +309,8 @@ def create_polygons(points):
                 logger.warning("Region {} in Annotation {} was omitted for "
                                "having fewer than 3 points.".format(r, a))
                 continue
-            x = df_r.X.astype(np.int)
-            y = df_r.Y.astype(np.int)
+            x = np.asarray(df_r.X, dtype=np.float).astype(np.int)
+            y = np.asarray(df_r.Y, dtype=np.float).astype(np.int)
             poly = Polygon([[xi, yi] for xi, yi in zip(x, y)])
             polygons.append([counter, poly])
     polygons = pd.DataFrame(

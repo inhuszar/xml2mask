@@ -1,0 +1,36 @@
+[10-06-2019 21:26:40] The program started with the command: /Users/inhuszar/prog/histroi/xml-to-mask.py /Volumes/dylan/transfer_20190115/Visual Cortex/PLP/NP082-16_PLP_RVC_20x.xml --image auto --verbose=40 --out example4 --fill 255
+[10-06-2019 21:26:40] /Volumes/dylan/transfer_20190115/Visual Cortex/PLP/NP082-16_PLP_RVC_20x.xml
+[10-06-2019 21:26:40] 	Annotation 0
+[10-06-2019 21:26:40] 		Region 0 has 2013 vertices.
+[10-06-2019 21:26:40] 		Region 1 has 68 vertices.
+[10-06-2019 21:26:40] 		Region 2 has 92 vertices.
+[10-06-2019 21:26:40] 	Annotation 1
+[10-06-2019 21:26:40] 		Region 0 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 1 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 2 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 3 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 4 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 5 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 6 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 7 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 8 has 2 vertices.
+[10-06-2019 21:26:40] 		Region 9 has 2 vertices.
+[10-06-2019 21:26:40] Region 0 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 1 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 2 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 3 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 4 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 5 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 6 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 7 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 8 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Region 9 in Annotation 1 was omitted for having fewer than 3 points.
+[10-06-2019 21:26:40] Found 3 polygon definition(s) in total.
+[10-06-2019 21:26:40] Current polygon: 0, Selected: False, NegativeROA: False
+[10-06-2019 21:26:40] Current polygon: 1, Selected: False, NegativeROA: True
+[10-06-2019 21:26:40] Current polygon: 2, Selected: True, NegativeROA: True
+[10-06-2019 21:26:40] Warning: polygon is not valid! Trying to fix...
+[10-06-2019 21:26:40] Fixing invalid polygon was successful.
+[10-06-2019 21:26:43] Binary mask FOV (pixels): (2750, 3734)
+[10-06-2019 21:26:52] Annotation layer 1 does not have any polygonal selections.
+[10-06-2019 21:26:52] All tasks were successfully completed.

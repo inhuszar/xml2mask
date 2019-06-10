@@ -40,12 +40,12 @@ def set_args(parser):
 
     # Optional argument groups
     numargs = parser.add_argument_group("Numerical modulators")
-    numargs.add_argument("-s", "--scale", type=float, default=[1], nargs="+",
+    numargs.add_argument("-s", "--scale", type=float, default=[1, 1], nargs="+",
                          help="Scaling factors for the x (hor.) and y (vert.) "
                               "coordinates.")
     numargs.add_argument("-t", "--target", type=int, default=None, nargs=2,
                          help="Target mask shape (vertical, horizontal).")
-    numargs.add_argument("-i", "--image", type=str, default="auto", nargs="+",
+    numargs.add_argument("-i", "--image", default=None, nargs="+",
                          help="Original image shape (vertical, horizontal).")
     numargs.add_argument("-c", "--fill", type=int, default=255,
                          help="Mask fill value for the ROI.")
@@ -85,8 +85,10 @@ def main(p):
     })
 
     # Infer original image size by opening SVS file (if --image is auto or path)
-    imgarg = [arg for arg in p.image if arg]
-    if len(imgarg) == 1:
+    imgarg = [arg for arg in p.image if arg] if p.image else None
+    if imgarg is None:
+        options.update({"original_shape": None})
+    elif len(imgarg) == 1:
         imgarg = str(imgarg[0])
         if os.path.isfile(imgarg):
             import openslide
@@ -118,7 +120,7 @@ def main(p):
     else:
         raise ValueError("Invalid argument for original image size. Expected "
                          "two integers for (vertical, horizontal) shape "
-                         "definitiion, or 'auto' for automatic inference from "
+                         "definition, or 'auto' for automatic inference from "
                          "adjacent SVS file, or path to the original image "
                          "file.")
 

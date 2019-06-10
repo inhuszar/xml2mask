@@ -1,0 +1,60 @@
+[11-06-2019 00:26:38] The program started with the command: /Users/inhuszar/prog/histroi/xml-to-mask.py example5/NP040-16_pTDP43_RVC.xml --scale 0.1 0.1 --verbose=40 --out example5 --fill 255
+[11-06-2019 00:26:38] example5/NP040-16_pTDP43_RVC.xml
+[11-06-2019 00:26:38] 	Annotation 0
+[11-06-2019 00:26:38] 		Region 0 has 1404 vertices.
+[11-06-2019 00:26:38] 		Region 1 has 1424 vertices.
+[11-06-2019 00:26:38] 		Region 2 has 97 vertices.
+[11-06-2019 00:26:38] 		Region 3 has 67 vertices.
+[11-06-2019 00:26:38] 		Region 4 has 987 vertices.
+[11-06-2019 00:26:38] 		Region 5 has 138 vertices.
+[11-06-2019 00:26:38] 		Region 6 has 787 vertices.
+[11-06-2019 00:26:38] 		Region 7 has 577 vertices.
+[11-06-2019 00:26:38] 	Annotation 1
+[11-06-2019 00:26:38] 		Region 0 has 1405 vertices.
+[11-06-2019 00:26:38] 	Annotation 2
+[11-06-2019 00:26:38] 		Region 0 has 1404 vertices.
+[11-06-2019 00:26:38] 		Region 1 has 1424 vertices.
+[11-06-2019 00:26:38] 		Region 2 has 97 vertices.
+[11-06-2019 00:26:38] 		Region 3 has 67 vertices.
+[11-06-2019 00:26:38] 		Region 4 has 987 vertices.
+[11-06-2019 00:26:38] 		Region 5 has 138 vertices.
+[11-06-2019 00:26:38] 		Region 6 has 787 vertices.
+[11-06-2019 00:26:38] 		Region 7 has 577 vertices.
+[11-06-2019 00:26:38] 		Region 8 has 109 vertices.
+[11-06-2019 00:26:38] 		Region 9 has 97 vertices.
+[11-06-2019 00:26:38] 		Region 10 has 92 vertices.
+[11-06-2019 00:26:38] 		Region 11 has 211 vertices.
+[11-06-2019 00:26:38] 		Region 12 has 89 vertices.
+[11-06-2019 00:26:38] 		Region 13 has 82 vertices.
+[11-06-2019 00:26:38] 	Annotation 3
+[11-06-2019 00:26:38] 		Region 0 has 1406 vertices.
+[11-06-2019 00:26:39] Found 24 polygon definition(s) in total.
+[11-06-2019 00:26:39] Current polygon: 0, Selected: False, NegativeROA: False
+[11-06-2019 00:26:39] Current polygon: 1, Selected: False, NegativeROA: True
+[11-06-2019 00:26:39] Current polygon: 2, Selected: False, NegativeROA: True
+[11-06-2019 00:26:39] Current polygon: 3, Selected: False, NegativeROA: True
+[11-06-2019 00:26:39] Current polygon: 4, Selected: False, NegativeROA: True
+[11-06-2019 00:26:39] Current polygon: 5, Selected: False, NegativeROA: True
+[11-06-2019 00:26:39] Current polygon: 6, Selected: False, NegativeROA: True
+[11-06-2019 00:26:39] Current polygon: 7, Selected: True, NegativeROA: True
+[11-06-2019 00:26:58] Binary mask FOV (pixels): [2566, 3669]
+[11-06-2019 00:27:57] Current polygon: 8, Selected: True, NegativeROA: False
+[11-06-2019 00:28:09] Binary mask FOV (pixels): [2566, 3669]
+[11-06-2019 00:28:58] Current polygon: 9, Selected: False, NegativeROA: False
+[11-06-2019 00:28:58] Current polygon: 10, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 11, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 12, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 13, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 14, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 15, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 16, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 17, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 18, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 19, Selected: True, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 20, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 21, Selected: False, NegativeROA: True
+[11-06-2019 00:28:58] Current polygon: 22, Selected: False, NegativeROA: True
+[11-06-2019 00:29:00] Binary mask FOV (pixels): [2566, 3669]
+[11-06-2019 00:29:30] Current polygon: 23, Selected: True, NegativeROA: False
+[11-06-2019 00:29:32] Binary mask FOV (pixels): [2566, 3669]
+[11-06-2019 00:29:57] All tasks were successfully completed.
