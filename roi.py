@@ -69,6 +69,7 @@ DEFAULT_OPTIONS = {
     "csv": False,
     "bin": True,
     "mask": True,
+    "fill_value": 255,
     "display": True,
     "verbose": 0,
     "outdir": None
@@ -89,7 +90,7 @@ def process(xmlfile, *xmlfiles, **options):
         6. Save polygonal selection as a binary object.
         7. Create binary mask at the specified resolution with the specified
            field-of-view (FOV) from the polygonal selection.
-        8. Export binary mask (values: 0-1) to an 8-bit TIFF file.
+        8. Export binary mask (values: 0-255) to an 8-bit TIFF file.
         +1 (optional): display polygonal selection and binary mask.
 
     """
@@ -142,6 +143,10 @@ def process(xmlfile, *xmlfiles, **options):
 
             # Set algebra
             selection = create_selection(polygons, regions, layer=layer)
+            if selection is None:
+                logger.warning("Annotation layer {} does not have any "
+                               "polygonal selections.".format(layer))
+                continue
 
             # Display selection
             if p.display:
@@ -169,7 +174,7 @@ def process(xmlfile, *xmlfiles, **options):
                 mask = create_mask(
                     selection, original_shape=p.original_shape,
                     target_shape=p.target_shape, scale_x=scale_x,
-                    scale_y=scale_y)
+                    scale_y=scale_y, fill_value=p.fill_value)
                 # Display binary mask
                 if p.display:
                     plt.imshow(mask, cmap="gray", aspect="equal")
@@ -346,7 +351,10 @@ def create_selection(polygons, regions, layer=None):
             negative.append(p.PolygonObject)
 
     # Set algebra: union of positive polygons
-    union = reduce(Polygon.union, positive)
+    if positive:
+        union = reduce(Polygon.union, positive)
+    else:
+        return None
     # Set algebra: intersection between union and negated polygons
     if negative:
         neg = reduce(Polygon.union, negative)
@@ -359,7 +367,7 @@ def create_selection(polygons, regions, layer=None):
 
 
 def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
-                scale_y=1, invert=False):
+                scale_y=1, invert=False, fill_value=1):
     """
     Creates an 8-bit binary mask based on the net polygonal selection.
     Depending on the exact specification of the parameters, the function may
@@ -401,6 +409,8 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
         the image will be assigned 0. Turn this option on for a reverse
         assignment of mask values.
     :type invert: bool
+    :param fill_value: Value (1-255) of the mask in the ROI. (Default=1)
+    :type fill_value: int
 
     :returns: binary mask highlighting the ROI
     :rtype: np.ndarray
@@ -439,7 +449,7 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
     ex = np.asarray(ex) * scale_x
     ey = np.asarray(ey) * scale_y
     rr, cc = draw_polygon(ey - ymin, ex - xmin, shape)
-    canvas[rr, cc] = 1
+    canvas[rr, cc] = fill_value
 
     # Clear internal contours
     for interior in selection.interiors:
@@ -450,7 +460,7 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
         canvas[rr, cc] = 0
 
     if invert:
-        canvas = 1 - canvas
+        canvas = fill_value - canvas
 
     return canvas
 

@@ -46,6 +46,8 @@ def set_args(parser):
                          help="Target mask shape (vertical, horizontal).")
     numargs.add_argument("-i", "--image", type=int, default=None, nargs=2,
                          help="Original image shape (vertical, horizontal).")
+    numargs.add_argument("-c", "--fill", type=int, default=255,
+                         help="Mask fill value for the ROI.")
 
     boolargs = parser.add_argument_group("Boolean modulators")
     boolargs.add_argument("--nodisplay", action="store_true", default=False,
@@ -75,6 +77,7 @@ def main(p):
         "csv": not p.nocsv,
         "bin": not p.nobin,
         "mask": not p.nomask,
+        "fill_value": p.fill,
         "display": not p.nodisplay,
         "verbose": p.verbose,
         "outdir": p.out
