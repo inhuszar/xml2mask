@@ -172,7 +172,10 @@ def process(xmlfile, *xmlfiles, **options):
     logger.critical("All tasks were successfully completed.")
 
     # Save logs
-    shutil.copy(temp_logfile[1], p.outbase + ".log")
+    try:
+        shutil.copy(temp_logfile[1], p.outbase + ".log")
+    except PermissionError:
+        pass
 
 
 def get_resolution(xmlfile):
