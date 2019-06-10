@@ -112,6 +112,8 @@ def process(xmlfile, *xmlfiles, **options):
     for f in xmlfiles:
         # Parse data in XML file and create data tables
         logger.info("{}".format(f))
+        if not str(f).lower().endswith(".xml"):
+            logger.warning("Input does not appear to be an XML file.")
         points, regions, annotations = parse_xml(f)
 
         # Create output base name

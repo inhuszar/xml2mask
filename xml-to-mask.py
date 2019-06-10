@@ -40,7 +40,7 @@ def set_args(parser):
 
     # Optional argument groups
     numargs = parser.add_argument_group("Numerical modulators")
-    numargs.add_argument("-s", "--scale", type=float, default=1, nargs="+",
+    numargs.add_argument("-s", "--scale", type=float, default=[1], nargs="+",
                          help="Scaling factors for the x (hor.) and y (vert.) "
                               "coordinates.")
     numargs.add_argument("-t", "--target", type=int, default=None, nargs=2,
@@ -91,18 +91,20 @@ def main(p):
         if os.path.isfile(imgarg):
             import openslide
             slideobj = openslide.open_slide(imgarg)
-            tshape = options["target_shape"] or slideobj.level_dimensions[-1]
+            tshape = options["target_shape"] \
+                     or slideobj.level_dimensions[-1][::-1]
             options.update({
-                "original_shape": slideobj.dimensions,
+                "original_shape": slideobj.dimensions[::-1],
                 "target_shape": tshape
             })
         elif imgarg.lower() == "auto":
             imgarg = os.path.splitext(p.xml_file)[0] + ".svs"
             import openslide
             slideobj = openslide.open_slide(imgarg)
-            tshape = options["target_shape"] or slideobj.level_dimensions[-1]
+            tshape = options["target_shape"] \
+                     or slideobj.level_dimensions[-1][::-1]
             options.update({
-                "original_shape": slideobj.dimensions,
+                "original_shape": slideobj.dimensions[::-1],
                 "target_shape": tshape
             })
         else:
