@@ -1,0 +1,4 @@
+Region_ID,Annotation,Id,Type,Zoom,Selected,ImageLocation,ImageFocus,Length,Area,LengthMicrons,AreaMicrons,Text,NegativeROA,InputRegionId,Analyze,DisplayId
+0,0,448101,0,0.021304,1,,0,41350.2,89228988.0,20753.6,22477105.7,,0,0,1,1
+1,1,448240,0,0,1,@70440,0,41350.2,89228988.0,20753.6,22477105.7,,0,448101,1,1
+2,2,448284,0,0,0,@70484,0,41350.2,89228988.0,20753.6,22477105.7,,0,448101,1,1

@@ -1,0 +1,14 @@
+[10-06-2019 05:50:44] The program started with the command: /Users/inhuszar/prog/histroi/xml-to-mask.py example2/NP015-15-14La-PLP.xml --scale 0.05 0.05 --image 44024 53783 --verbose=40 --out example2
+[10-06-2019 05:50:44] example2/NP015-15-14La-PLP.xml
+[10-06-2019 05:50:44] 	Annotation 0
+[10-06-2019 05:50:44] 		Region 0 has 626 vertices.
+[10-06-2019 05:50:44] 	Annotation 1
+[10-06-2019 05:50:44] 		Region 0 has 627 vertices.
+[10-06-2019 05:50:44] 	Annotation 2
+[10-06-2019 05:50:44] 		Region 0 has 627 vertices.
+[10-06-2019 05:50:44] Found 3 polygon definition(s) in total.
+[10-06-2019 05:50:44] Current polygon: 0, Selected: True, NegativeROA: False
+[10-06-2019 05:50:44] Current polygon: 1, Selected: True, NegativeROA: False
+[10-06-2019 05:50:44] Current polygon: 2, Selected: False, NegativeROA: False
+[10-06-2019 05:50:46] Binary mask FOV (pixels): (2201, 2689)
+[10-06-2019 05:50:49] All tasks were successfully completed.
