@@ -16,6 +16,7 @@ given resolution.
 
 # DEPENDENCIES
 
+import os
 import roi
 import sys
 import argparse
@@ -44,7 +45,7 @@ def set_args(parser):
                               "coordinates.")
     numargs.add_argument("-t", "--target", type=int, default=None, nargs=2,
                          help="Target mask shape (vertical, horizontal).")
-    numargs.add_argument("-i", "--image", type=int, default=None, nargs=2,
+    numargs.add_argument("-i", "--image", type=str, default="auto", nargs="+",
                          help="Original image shape (vertical, horizontal).")
     numargs.add_argument("-c", "--fill", type=int, default=255,
                          help="Mask fill value for the ROI.")
@@ -82,6 +83,43 @@ def main(p):
         "verbose": p.verbose,
         "outdir": p.out
     })
+
+    # Infer original image size by opening SVS file (if --image is auto or path)
+    imgarg = str(p.image).split(" ")
+    if len(imgarg) == 1:
+        imgarg = str(imgarg[0])
+        if os.path.isfile(imgarg):
+            import openslide
+            slideobj = openslide.open_slide(imgarg)
+            tshape = options["target_shape"] or slideobj.level_dimensions[-1]
+            options.update({
+                "original_shape": slideobj.dimensions,
+                "target_shape": tshape
+            })
+        elif imgarg.lower() == "auto":
+            imgarg = os.path.splitext(p.xml_file)[0] + ".svs"
+            import openslide
+            slideobj = openslide.open_slide(imgarg)
+            tshape = options["target_shape"] or slideobj.level_dimensions[-1]
+            options.update({
+                "original_shape": slideobj.dimensions,
+                "target_shape": tshape
+            })
+        else:
+            raise ValueError("Invalid string after --image flag. Expected "
+                             "either 'auto' for automatic inference from "
+                             "adjacent file, or the full path to the original "
+                             "image file.")
+
+    elif len(imgarg) == 2:
+        options.update({"original_shape": [int(d) for d in imgarg]})
+    else:
+        raise ValueError("Invalid argument for original image size. Expected "
+                         "two integers for (vertical, horizontal) shape "
+                         "definitiion, or 'auto' for automatic inference from "
+                         "adjacent SVS file, or path to the original image "
+                         "file.")
+
     roi.process(p.xml_file, **options)
 
 
