@@ -85,7 +85,7 @@ def main(p):
     })
 
     # Infer original image size by opening SVS file (if --image is auto or path)
-    imgarg = str(p.image).split(" ")
+    imgarg = [arg for arg in p.image if arg]
     if len(imgarg) == 1:
         imgarg = str(imgarg[0])
         if os.path.isfile(imgarg):
