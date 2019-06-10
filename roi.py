@@ -109,84 +109,93 @@ def process(xmlfile, *xmlfiles, **options):
                 .format(" ".join(sys.argv)))
 
     xmlfiles = (xmlfile,) + xmlfiles
+    err = 0
     for f in xmlfiles:
-        # Parse data in XML file and create data tables
-        logger.info("{}".format(f))
-        if not str(f).lower().endswith(".xml"):
-            logger.warning("Input does not appear to be an XML file.")
-        points, regions, annotations = parse_xml(f)
+        try:
+            # Parse data in XML file and create data tables
+            logger.info("{}".format(f))
+            if not str(f).lower().endswith(".xml"):
+                logger.warning("Input does not appear to be an XML file.")
+            points, regions, annotations = parse_xml(f)
 
-        # Create output base name
-        p.basename = os.path.splitext(os.path.split(f)[-1])[0]
-        if p.outdir:
-            if not os.path.isdir(p.outdir):
-                os.makedirs(p.outdir)
-            p.outbase = os.path.join(p.outdir, p.basename)
-        else:
-            p.outbase = os.path.splitext(f)[0]
+            # Create output base name
+            p.basename = os.path.splitext(os.path.split(f)[-1])[0]
+            if p.outdir:
+                if not os.path.isdir(p.outdir):
+                    os.makedirs(p.outdir)
+                p.outbase = os.path.join(p.outdir, p.basename)
+            else:
+                p.outbase = os.path.splitext(f)[0]
 
-        # Save the tables of the relational database
-        if p.csv:
-            points.to_csv(p.outbase + "_points.csv")
-            regions.to_csv(p.outbase + "_regions.csv")
-            annotations.to_csv(p.outbase + "_annotations.csv")
+            # Save the tables of the relational database
+            if p.csv:
+                points.to_csv(p.outbase + "_points.csv")
+                regions.to_csv(p.outbase + "_regions.csv")
+                annotations.to_csv(p.outbase + "_annotations.csv")
 
-        # Retrieve polygons
-        polygons = create_polygons(points)
+            # Retrieve polygons
+            polygons = create_polygons(points)
 
-        # Treat annotation layers separately
-        for layer in annotations.index.unique():
-            layerdir = p.outdir or os.path.split(f)[0]
-            layerdir = os.path.join(
-                layerdir, "AnnotationLayer_{0:02d}".format(layer))
-            if not os.path.isdir(layerdir):
-                os.makedirs(layerdir)
-            layerbase = os.path.join(layerdir, p.basename)
+            # Treat annotation layers separately
+            for layer in annotations.index.unique():
+                layerdir = p.outdir or os.path.split(f)[0]
+                layerdir = os.path.join(
+                    layerdir, "AnnotationLayer_{0:02d}".format(layer))
+                if not os.path.isdir(layerdir):
+                    os.makedirs(layerdir)
+                layerbase = os.path.join(layerdir, p.basename)
 
-            # Set algebra
-            selection = create_selection(polygons, regions, layer=layer)
-            if selection is None:
-                logger.warning("Annotation layer {} does not have any "
-                               "polygonal selections.".format(layer))
-                continue
+                # Set algebra
+                selection = create_selection(polygons, regions, layer=layer)
+                if selection is None:
+                    logger.warning("Annotation layer {} does not have any "
+                                   "polygonal selections.".format(layer))
+                    continue
 
-            # Display selection
-            if p.display:
-                ex, ey = selection.exterior.xy
-                plt.figure()
-                plt.plot(np.asarray(ex), -np.asarray(ey))
-                for interior in selection.interiors:
-                    ix, iy = interior.xy
-                    plt.plot(np.asarray(ix), -np.asarray(iy))
-                plt.show()
-
-            # Export the polygonal selection object to a binary file
-            if p.bin:
-                with open(layerbase + "_selection.obj", "wb") as fp:
-                    dill.dump(selection, fp)
-
-            # Generate binary mask
-            if p.mask:
-                if len(p.scale) == 1:
-                    scale_x, scale_y = p.scale * 2  # p.scale is a tuple!
-                elif len(p.scale) == 2:
-                    scale_x, scale_y = p.scale  # p.scale is a tuple!
-                else:
-                    raise ValueError("The number of scaling factors must be 2.")
-                mask = create_mask(
-                    selection, original_shape=p.original_shape,
-                    target_shape=p.target_shape, scale_x=scale_x,
-                    scale_y=scale_y, fill_value=p.fill_value)
-                # Display binary mask
+                # Display selection
                 if p.display:
-                    plt.imshow(mask, cmap="gray", aspect="equal")
+                    ex, ey = selection.exterior.xy
+                    plt.figure()
+                    plt.plot(np.asarray(ex), -np.asarray(ey))
+                    for interior in selection.interiors:
+                        ix, iy = interior.xy
+                        plt.plot(np.asarray(ix), -np.asarray(iy))
                     plt.show()
-                # Save binary mask
-                Image.fromarray(mask).save(
-                    os.path.join(layerbase + "_mask.tif"))
+
+                # Export the polygonal selection object to a binary file
+                if p.bin:
+                    with open(layerbase + "_selection.obj", "wb") as fp:
+                        dill.dump(selection, fp)
+
+                # Generate binary mask
+                if p.mask:
+                    if len(p.scale) == 1:
+                        scale_x, scale_y = p.scale * 2  # p.scale is a tuple!
+                    elif len(p.scale) == 2:
+                        scale_x, scale_y = p.scale  # p.scale is a tuple!
+                    else:
+                        raise ValueError("The number of scaling factors must be 2.")
+                    mask = create_mask(
+                        selection, original_shape=p.original_shape,
+                        target_shape=p.target_shape, scale_x=scale_x,
+                        scale_y=scale_y, fill_value=p.fill_value)
+                    # Display binary mask
+                    if p.display:
+                        plt.imshow(mask, cmap="gray", aspect="equal")
+                        plt.show()
+                    # Save binary mask
+                    Image.fromarray(mask).save(
+                        os.path.join(layerbase + "_mask.tif"))
+        except Exception:
+            logger.critical("FAILURE: {}".format(f))
+            err += 1
+            continue
 
     # Conclude run
-    logger.critical("All tasks were successfully completed.")
+    if err == 0:
+        logger.critical("All tasks were successfully completed.")
+    else:
+        logger.critical("Tasks were completed with {} error(s).".format(err))
 
     # Save logs
     try:
@@ -355,6 +364,13 @@ def create_selection(polygons, regions, layer=None):
     # Set algebra: union of positive polygons
     if positive:
         union = reduce(Polygon.union, positive)
+        if not union.is_valid:
+            logger.critical("Warning: polygon is not valid! Trying to fix...")
+            union = union.buffer(0)
+            if not union.is_valid:
+                logger.critical("Fixing invalid polygon was not successful.")
+            else:
+                logger.info("Fixing invalid polygon was successful.")
     else:
         return None
     # Set algebra: intersection between union and negated polygons
@@ -467,11 +483,18 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
     return canvas
 
 
-def visualise_polygon(p):
+def visualise_polygon(p, show=True, save=False):
     x, y = p.exterior.xy
     plt.figure()
     plt.plot(np.asarray(x), np.asarray(y))
-    plt.show()
+    for interior in p.interiors:
+        xi, yi = interior.xy
+        plt.plot(np.asarray(xi), np.asarray(yi))
+    if save:
+        plt.savefig(save)
+    if show:
+        plt.show()
+
 
 
 if __name__ == "__main__":
