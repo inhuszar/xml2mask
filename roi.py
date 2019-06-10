@@ -114,11 +114,11 @@ def process(xmlfile, *xmlfiles, **options):
         points, regions, annotations = parse_xml(f)
 
         # Create output base name
+        p.basename = os.path.splitext(os.path.split(f)[-1])[0]
         if p.outdir:
             if not os.path.isdir(p.outdir):
                 os.makedirs(p.outdir)
-            outbase = os.path.splitext(os.path.split(f)[-1])[0]
-            p.outbase = os.path.join(p.outdir, outbase)
+            p.outbase = os.path.join(p.outdir, p.basename)
         else:
             p.outbase = os.path.splitext(f)[0]
 
@@ -131,42 +131,52 @@ def process(xmlfile, *xmlfiles, **options):
         # Retrieve polygons
         polygons = create_polygons(points)
 
-        # Set algebra
-        selection = create_selection(polygons, regions)
+        # Treat annotation layers separately
+        for layer in annotations.index.unique():
+            layerdir = p.outdir or os.path.split(f)[0]
+            layerdir = os.path.join(
+                layerdir, "AnnotationLayer_{0:02d}".format(layer))
+            if not os.path.isdir(layerdir):
+                os.makedirs(layerdir)
+            layerbase = os.path.join(layerdir, p.basename)
 
-        # Display selection
-        if p.display:
-            ex, ey = selection.exterior.xy
-            plt.figure()
-            plt.plot(np.asarray(ex), -np.asarray(ey))
-            for interior in selection.interiors:
-                ix, iy = interior.xy
-                plt.plot(np.asarray(ix), -np.asarray(iy))
-            plt.show()
+            # Set algebra
+            selection = create_selection(polygons, regions, layer=layer)
 
-        # Export the polygonal selection object to a binary file
-        if p.bin:
-            with open(p.outbase + "_selection.obj", "wb") as fp:
-                dill.dump(selection, fp)
-
-        # Generate binary mask
-        if p.mask:
-            if len(p.scale) == 1:
-                scale_x, scale_y = p.scale * 2  # p.scale is a tuple!
-            elif len(p.scale) == 2:
-                scale_x, scale_y = p.scale  # p.scale is a tuple!
-            else:
-                raise ValueError("The number of scaling factors must be 2.")
-            mask = create_mask(
-                selection, original_shape=p.original_shape,
-                target_shape=p.target_shape, scale_x=scale_x,
-                scale_y=scale_y)
-            # Display binary mask
+            # Display selection
             if p.display:
-                plt.imshow(mask, cmap="gray", aspect="equal")
+                ex, ey = selection.exterior.xy
+                plt.figure()
+                plt.plot(np.asarray(ex), -np.asarray(ey))
+                for interior in selection.interiors:
+                    ix, iy = interior.xy
+                    plt.plot(np.asarray(ix), -np.asarray(iy))
                 plt.show()
-            # Save binary mask
-            Image.fromarray(mask).save(os.path.join(p.outbase + "_mask.tif"))
+
+            # Export the polygonal selection object to a binary file
+            if p.bin:
+                with open(layerbase + "_selection.obj", "wb") as fp:
+                    dill.dump(selection, fp)
+
+            # Generate binary mask
+            if p.mask:
+                if len(p.scale) == 1:
+                    scale_x, scale_y = p.scale * 2  # p.scale is a tuple!
+                elif len(p.scale) == 2:
+                    scale_x, scale_y = p.scale  # p.scale is a tuple!
+                else:
+                    raise ValueError("The number of scaling factors must be 2.")
+                mask = create_mask(
+                    selection, original_shape=p.original_shape,
+                    target_shape=p.target_shape, scale_x=scale_x,
+                    scale_y=scale_y)
+                # Display binary mask
+                if p.display:
+                    plt.imshow(mask, cmap="gray", aspect="equal")
+                    plt.show()
+                # Save binary mask
+                Image.fromarray(mask).save(
+                    os.path.join(layerbase + "_mask.tif"))
 
     # Conclude run
     logger.critical("All tasks were successfully completed.")
@@ -301,7 +311,7 @@ def create_polygons(points):
     return polygons
 
 
-def create_selection(polygons, regions):
+def create_selection(polygons, regions, layer=None):
     """
     Creates a net polygonal selection object by adding positive polygonal
     regions and subtracting negative polygonal regions. Positive regions are
@@ -312,6 +322,8 @@ def create_selection(polygons, regions):
     :type polygons: pd.DataFrame
     :param regions: table of all Regions
     :type regions: pd.DataFrame
+    :param layer: only include polygons from the specified annotation layer
+    :type layer: int
 
     :returns: net polygonal selection object
     :rtype: shapely.Polygon
@@ -322,6 +334,8 @@ def create_selection(polygons, regions):
     positive = []
     negative = []
     for poly_id, p in polygons.iterrows():
+        if (layer is not None) and (regions.iloc[poly_id].Annotation != layer):
+            continue
         selected = bool(int(regions.iloc[poly_id].Selected))
         nroa = bool(int(regions.iloc[poly_id].NegativeROA))
         logger.debug("Current polygon: {}, Selected: {}, NegativeROA: {}"
