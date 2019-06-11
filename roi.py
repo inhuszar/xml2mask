@@ -44,6 +44,7 @@ from attrdict import AttrMap
 from collections import namedtuple
 import xml.etree.ElementTree as ET
 from shapely.geometry import Polygon
+from shapely.ops import cascaded_union
 from skimage.draw import polygon as draw_polygon
 
 
@@ -358,25 +359,40 @@ def create_selection(polygons, regions, layer=None):
 
     # Set algebra: union of positive polygons
     if positive:
+        positive = fix_polygon(*positive)
         union = reduce(Polygon.union, positive)
-        if not union.is_valid:
-            logger.critical("Warning: polygon is not valid! Trying to fix...")
-            union = union.buffer(0)
-            if not union.is_valid:
-                logger.critical("Fixing invalid polygon was not successful.")
-            else:
-                logger.info("Fixing invalid polygon was successful.")
+        fix_polygon(union)
     else:
         return None
     # Set algebra: intersection between union and negated polygons
-    if negative:
-        neg = reduce(Polygon.union, negative)
-        neg = union.intersection(neg)
-        selection = union.difference(neg)
-    else:
-        selection = union
+    selection = union
+    for neg in negative:
+        neg = fix_polygon(neg)
+        selection = selection.difference(neg)
 
     return selection
+
+
+def fix_polygon(*polygons):
+    """
+    Corrects self-intersecting polygons.
+
+    """
+    single_input = bool(len(polygons) == 1)
+    fixed = []
+    for p in polygons:
+        if not p.is_valid:
+            p = p.buffer(0)
+            if not p.is_valid:
+                logger.critical("Fixing an invalid polygon was unsuccessful.")
+            else:
+                logger.info("Fixing an invalid polygon was successful.")
+        fixed.append(p)
+
+    if single_input:
+        return fixed[0]
+    else:
+        return fixed
 
 
 def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
@@ -458,19 +474,36 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
     canvas = np.zeros(shape, dtype=np.uint8, order="C")
 
     # Fill exterior contour
-    ex, ey = selection.exterior.xy
-    ex = np.asarray(ex) * scale_x
-    ey = np.asarray(ey) * scale_y
-    rr, cc = draw_polygon(ey - ymin, ex - xmin, shape)
-    canvas[rr, cc] = fill_value
+    if hasattr(selection, "geoms"):
+        for geom in selection.geoms:
+            ex, ey = geom.exterior.xy
+            ex = np.asarray(ex) * scale_x
+            ey = np.asarray(ey) * scale_y
+            rr, cc = draw_polygon(ey - ymin, ex - xmin, shape)
+            canvas[rr, cc] = fill_value
+    else:
+        ex, ey = selection.exterior.xy
+        ex = np.asarray(ex) * scale_x
+        ey = np.asarray(ey) * scale_y
+        rr, cc = draw_polygon(ey - ymin, ex - xmin, shape)
+        canvas[rr, cc] = fill_value
 
     # Clear internal contours
-    for interior in selection.interiors:
-        ix, iy = interior.xy
-        ix = np.asarray(ix) * scale_x
-        iy = np.asarray(iy) * scale_y
-        rr, cc = draw_polygon(iy - ymin, ix - xmin, shape)
-        canvas[rr, cc] = 0
+    if hasattr(selection, "geoms"):
+        for geom in selection.geoms:
+            for interior in geom.interiors:
+                ix, iy = interior.xy
+                ix = np.asarray(ix) * scale_x
+                iy = np.asarray(iy) * scale_y
+                rr, cc = draw_polygon(iy - ymin, ix - xmin, shape)
+                canvas[rr, cc] = 0
+    else:
+        for interior in selection.interiors:
+            ix, iy = interior.xy
+            ix = np.asarray(ix) * scale_x
+            iy = np.asarray(iy) * scale_y
+            rr, cc = draw_polygon(iy - ymin, ix - xmin, shape)
+            canvas[rr, cc] = 0
 
     if invert:
         canvas = fill_value - canvas
@@ -479,17 +512,34 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
 
 
 def visualise_polygon(p, show=True, save=False):
-    x, y = p.exterior.xy
+    # Create figure
     plt.figure()
-    plt.plot(np.asarray(x), np.asarray(y))
-    for interior in p.interiors:
-        xi, yi = interior.xy
-        plt.plot(np.asarray(xi), np.asarray(yi))
+
+    # Visualise exterior boundary/boundaries
+    if hasattr(p, "geoms"):
+        for geom in p.geoms:
+            x, y = geom.exterior.xy
+            plt.plot(np.asarray(x), np.asarray(y), color="blue")
+    else:
+        x, y = p.exterior.xy
+        plt.plot(np.asarray(x), np.asarray(y), color="blue")
+
+    # Visualise interior boundary/boundaries
+    if hasattr(p, "geoms"):
+        for geom in p.geoms:
+            for interior in geom.interiors:
+                xi, yi = interior.xy
+                plt.plot(np.asarray(xi), np.asarray(yi), color="red")
+    else:
+        for interior in p.interiors:
+            xi, yi = interior.xy
+            plt.plot(np.asarray(xi), np.asarray(yi), color="red")
+
+    # Perform the specified operations
     if save:
         plt.savefig(save)
     if show:
         plt.show()
-
 
 
 if __name__ == "__main__":

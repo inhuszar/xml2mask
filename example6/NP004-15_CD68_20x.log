@@ -1,0 +1,55 @@
+[11-06-2019 02:24:33] The program started with the command: /Users/inhuszar/prog/histroi/xml-to-mask.py /Volumes/dylan/transfer_20190115/Anterior Cingulate/CD68_20x/NP004-15_CD68_20x.xml --image auto --verbose=40 --out example6 --fill 255
+[11-06-2019 02:24:33] /Volumes/dylan/transfer_20190115/Anterior Cingulate/CD68_20x/NP004-15_CD68_20x.xml
+[11-06-2019 02:24:33] 	Annotation 0
+[11-06-2019 02:24:33] 		Region 0 has 1815 vertices.
+[11-06-2019 02:24:33] 		Region 1 has 1599 vertices.
+[11-06-2019 02:24:33] 		Region 2 has 118 vertices.
+[11-06-2019 02:24:33] 		Region 3 has 98 vertices.
+[11-06-2019 02:24:33] 		Region 4 has 78 vertices.
+[11-06-2019 02:24:33] 		Region 5 has 168 vertices.
+[11-06-2019 02:24:33] 		Region 6 has 668 vertices.
+[11-06-2019 02:24:33] 		Region 7 has 64 vertices.
+[11-06-2019 02:24:33] 		Region 8 has 264 vertices.
+[11-06-2019 02:24:33] 		Region 9 has 165 vertices.
+[11-06-2019 02:24:33] 		Region 10 has 76 vertices.
+[11-06-2019 02:24:33] 		Region 11 has 83 vertices.
+[11-06-2019 02:24:33] 		Region 12 has 77 vertices.
+[11-06-2019 02:24:33] 		Region 13 has 62 vertices.
+[11-06-2019 02:24:33] 		Region 14 has 73 vertices.
+[11-06-2019 02:24:33] 		Region 15 has 60 vertices.
+[11-06-2019 02:24:33] 		Region 16 has 89 vertices.
+[11-06-2019 02:24:33] 		Region 17 has 63 vertices.
+[11-06-2019 02:24:33] 		Region 18 has 58 vertices.
+[11-06-2019 02:24:33] 		Region 19 has 54 vertices.
+[11-06-2019 02:24:33] 		Region 20 has 83 vertices.
+[11-06-2019 02:24:33] 		Region 21 has 94 vertices.
+[11-06-2019 02:24:33] 		Region 22 has 64 vertices.
+[11-06-2019 02:24:33] 		Region 23 has 55 vertices.
+[11-06-2019 02:24:33] Found 24 polygon definition(s) in total.
+[11-06-2019 02:24:33] Current polygon: 0, Selected: False, NegativeROA: False
+[11-06-2019 02:24:33] Current polygon: 1, Selected: True, NegativeROA: False
+[11-06-2019 02:24:33] Current polygon: 2, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 3, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 4, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 5, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 6, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 7, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 8, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 9, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 10, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 11, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 12, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 13, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 14, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 15, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 16, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 17, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 18, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 19, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 20, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 21, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 22, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Current polygon: 23, Selected: False, NegativeROA: True
+[11-06-2019 02:24:33] Fixing an invalid polygon was successful.
+[11-06-2019 02:24:36] Binary mask FOV (pixels): (2578, 3610)
+[11-06-2019 02:24:57] All tasks were successfully completed.
