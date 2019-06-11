@@ -360,12 +360,14 @@ def create_selection(polygons, regions, layer=None):
     # Set algebra: union of positive polygons
     if positive:
         positive = fix_polygon(*positive)
-        union = reduce(Polygon.union, positive)
-        fix_polygon(union)
+        if isinstance(positive, (tuple, list)):
+            union = reduce(Polygon.union, positive)
+            selection = fix_polygon(union)
+        else:
+            selection = positive
     else:
         return None
     # Set algebra: intersection between union and negated polygons
-    selection = union
     for neg in negative:
         neg = fix_polygon(neg)
         selection = selection.difference(neg)
