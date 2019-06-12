@@ -44,7 +44,6 @@ from attrdict import AttrMap
 from collections import namedtuple
 import xml.etree.ElementTree as ET
 from shapely.geometry import Polygon
-from shapely.ops import cascaded_union
 from skimage.draw import polygon as draw_polygon
 
 
@@ -515,27 +514,28 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
 
 def visualise_polygon(p, show=True, save=False):
     # Create figure
-    plt.figure()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
 
     # Visualise exterior boundary/boundaries
     if hasattr(p, "geoms"):
         for geom in p.geoms:
             x, y = geom.exterior.xy
-            plt.plot(np.asarray(x), np.asarray(y), color="blue")
+            ax.plot(np.asarray(x), np.asarray(y), color="blue")
     else:
         x, y = p.exterior.xy
-        plt.plot(np.asarray(x), np.asarray(y), color="blue")
+        ax.plot(np.asarray(x), np.asarray(y), color="blue")
 
     # Visualise interior boundary/boundaries
     if hasattr(p, "geoms"):
         for geom in p.geoms:
             for interior in geom.interiors:
                 xi, yi = interior.xy
-                plt.plot(np.asarray(xi), np.asarray(yi), color="red")
+                ax.plot(np.asarray(xi), np.asarray(yi), color="red")
     else:
         for interior in p.interiors:
             xi, yi = interior.xy
-            plt.plot(np.asarray(xi), np.asarray(yi), color="red")
+            ax.plot(np.asarray(xi), np.asarray(yi), color="red")
 
     # Perform the specified operations
     if save:

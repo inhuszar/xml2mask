@@ -1,0 +1,36 @@
+[12-06-2019 12:07:56] The program started with the command: /Users/inhuszar/.conda/envs/histroi/bin/xml2mask test/example/NP391-16_PLP_LVC_20x.xml --scale 0.1 0.1
+[12-06-2019 12:07:56] test/example/NP391-16_PLP_LVC_20x.xml
+[12-06-2019 12:07:56] 	Annotation 0
+[12-06-2019 12:07:56] 		Region 0 has 1897 vertices.
+[12-06-2019 12:07:56] 		Region 1 has 569 vertices.
+[12-06-2019 12:07:56] 		Region 2 has 473 vertices.
+[12-06-2019 12:07:56] 		Region 3 has 778 vertices.
+[12-06-2019 12:07:56] 	Annotation 1
+[12-06-2019 12:07:56] 		Region 0 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 1 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 2 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 3 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 4 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 5 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 6 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 7 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 8 has 2 vertices.
+[12-06-2019 12:07:56] 		Region 9 has 2 vertices.
+[12-06-2019 12:07:56] Region 0 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 1 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 2 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 3 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 4 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 5 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 6 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 7 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 8 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Region 9 in Annotation 1 was omitted for having fewer than 3 points.
+[12-06-2019 12:07:56] Found 4 polygon definition(s) in total.
+[12-06-2019 12:07:56] Current polygon: 0, Selected: True, NegativeROA: False
+[12-06-2019 12:07:56] Current polygon: 1, Selected: False, NegativeROA: True
+[12-06-2019 12:07:56] Current polygon: 2, Selected: False, NegativeROA: True
+[12-06-2019 12:07:56] Current polygon: 3, Selected: False, NegativeROA: True
+[12-06-2019 12:07:56] Binary mask FOV (pixels): [1569, 1550]
+[12-06-2019 12:08:04] Annotation layer 1 does not have any polygonal selections.
+[12-06-2019 12:08:04] All tasks were successfully completed.

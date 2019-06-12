@@ -17,8 +17,8 @@ given resolution.
 # DEPENDENCIES
 
 import os
-import roi
 import sys
+from . import roi
 import argparse
 
 
@@ -40,30 +40,32 @@ def set_args(parser):
 
     # Optional argument groups
     numargs = parser.add_argument_group("Numerical modulators")
-    numargs.add_argument("-s", "--scale", type=float, default=[1, 1], nargs="+",
+    numargs.add_argument("--scale", type=float, default=[1, 1], nargs="+",
                          help="Scaling factors for the x (hor.) and y (vert.) "
                               "coordinates.")
-    numargs.add_argument("-t", "--target", type=int, default=None, nargs=2,
+    numargs.add_argument("--target", type=int, default=None, nargs=2,
                          help="Target mask shape (vertical, horizontal).")
-    numargs.add_argument("-i", "--image", default=None, nargs="+",
+    numargs.add_argument("--image", default=None, nargs="+",
                          help="Original image shape (vertical, horizontal).")
-    numargs.add_argument("-c", "--fill", type=int, default=255,
-                         help="Mask fill value for the ROI.")
+    numargs.add_argument("--fill", type=int, default=255,
+                         help="Mask fill value for the ROI. (Default: 255)")
 
     boolargs = parser.add_argument_group("Boolean modulators")
-    boolargs.add_argument("--nodisplay", action="store_true", default=False,
-                          help="Do not display ROI and binary mask.")
+    boolargs.add_argument("--display", action="store_true", default=False,
+                          help="Display ROI and binary mask.")
     boolargs.add_argument("--nocsv", action="store_true", default=False,
                           help="Do not save vertex data in CSV format.")
     boolargs.add_argument("--nobin", action="store_true", default=False,
                           help="Do not save polygonal selection object.")
     boolargs.add_argument("--nomask", help="Do not save binary ROI mask.",
                           action="store_true", default=False)
-    boolargs.add_argument("-v", "--verbose", metavar="level", default=0,
-                          type=int, help="Verbosity level (0-40).")
+    boolargs.add_argument("--verbose", metavar="level", default=40,
+                          type=int, help="Verbosity level (0-40, default: 40).")
 
     strargs = parser.add_argument_group("String modulators")
-    strargs.add_argument("--out", help="Output directory (without filename!).",
+    strargs.add_argument("--out", help="Alternative output directory "
+                                       "(without filename!). Default: "
+                                       "directory of the input file.",
                          type=str, default=None, required=False)
 
 
@@ -79,7 +81,7 @@ def main(p):
         "bin": not p.nobin,
         "mask": not p.nomask,
         "fill_value": p.fill,
-        "display": not p.nodisplay,
+        "display": p.display,
         "verbose": p.verbose,
         "outdir": p.out
     })
@@ -125,14 +127,14 @@ def main(p):
                          "file.")
 
     roi.process(p.xml_file, **options)
+    if p.verbose > 0:
+        print("Task complete. Check the output directory.")
 
 
-if __name__ == "__main__":
-    """ Program execution starts here. """
-
+def init():
     # Define argument parser
     parser = argparse.ArgumentParser(
-        prog="generate_mask",
+        prog="xml2mask",
         description="Convert Aperio Image Analsys XML histology annotation "
                     "files to binary masks.")
     set_args(parser)
@@ -142,3 +144,9 @@ if __name__ == "__main__":
         main(parser.parse_args())
     else:
         parser.print_help()
+
+
+if __name__ == "__main__":
+    """ Program execution starts here. """
+    init()
+
