@@ -5,7 +5,7 @@ import sys
 from setuptools import setup, find_packages
 
 dylibs = os.getenv("DYLD_FALLBACK_LIBRARY_PATH")
-if "usr/lib" not in dylibs.split(":"):
+if not dylibs or ("/usr/lib" not in dylibs.split(":")):
       if sys.platform == "darwin":
             configfile = os.path.expanduser("~/.bash_profile")
       elif sys.platform in ("linux", "linux2"):
@@ -13,9 +13,9 @@ if "usr/lib" not in dylibs.split(":"):
       else:
             raise OSError("Unsupported platform.")
       with open(configfile, "a") as outfile:
-            outfile.write("\nAdded by HISTROI installer.\n")
+            outfile.write("\n#Added by the xml2mask installer.\n")
             outfile.write("export DYLD_FALLBACK_LIBRARY_PATH="
-                          "usr/lib:$DYLD_FALLBACK_LIBRARY_PATH\n")
+                          "/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH\n")
 
 setup(name="xml2mask",
       version="1.0",
