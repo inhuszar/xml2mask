@@ -35,7 +35,7 @@ Converts XML annotation files from Aperio Image Analysis to binary masks.
 ```
 xml2mask <xml_file> [options]
 ```
-<span style="color:red">Important:</span> do not forgetto activate the conda environment before using the above command (see installation step #4).
+<span style="color:red">Important:</span> do not forget to activate the conda environment before using the above command (see installation step #5).
 
 ### Setting the output shape
 One of the following must be specified as command-line options:
