@@ -513,11 +513,13 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
     # Set scale to match target shape
     if target_shape is not None:
         if original_shape is not None:
-            scale_y, scale_x = np.divide(target_shape, original_shape)
+            scale_y, scale_x = np.divide(target_shape, original_shape) \
+                               * np.asarray([scale_y, scale_x])
         else:
             xmin, ymin, xmax, ymax = selection.bounds
-            shape = [int(dim) for dim in (ymax - ymin + 1, xmax - xmin + 1)]
-            scale_y, scale_x = np.divide(target_shape, shape)
+            shape = (int(ymax - ymin + 1), int(xmax - xmin + 1))
+            scale_y, scale_x = np.divide(target_shape, shape) \
+                               * np.asarray([scale_y, scale_x])
 
     # Define FOV
     if tile:
