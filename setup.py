@@ -18,7 +18,7 @@ if not dylibs or ("/usr/lib" not in dylibs.split(":")):
                           "/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH\n")
 
 setup(name="xml2mask",
-      version="1.1",
+      version="2.0",
       description="Create binary masks from Aperio XML annotation files.",
       author="Istvan N. Huszar",
       author_email="istvan.huszar@dtc.ox.ac.uk",
