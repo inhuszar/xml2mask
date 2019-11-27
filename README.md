@@ -54,7 +54,7 @@ The following may be specified as command-line options (either alone or in combi
 4. `--target 3000 2000`: sets a precise value for the output shape. Behind the scenes, these are used to calculate scaling factors for the histology image. If --scale is also specified, the target shape specification takes precedence and overrides the scaling factors.
 5. `--tile 29000 17000 2000 2000`: creates a binary mask for a (x=2000 x y=2000) pixel large tile of the original histology image, the top-left corner of which is at (x=29000px, y=17000px). The coordinates and the size of the tile must be specified with respect to the output reference frame, i.e. taking all scaling into account. If no scaling or target shape is specified, and `--resolution high` is set, the coordinates and tile sizes are in the reference frame of the highest-
 resolution histology image.
-6. `--out outdir`: specifies the output directory where all files will be saved to. The output directory may or may not exist at the time of executing the command, but it must not contain a file name specification. If `--out` is not given, the out will be saved next to the input XML file.
+6. `--out outdir`: specifies the output directory where all files will be saved to. The output directory may or may not exist at the time of executing the command, but it must not contain a file name specification. If --out is not given, the output will be saved next to the input XML file.
 7. `--histo`: saves a histology image output next to the annotation masks with a matching FOV, so that the overlap of the two can be verified by eye.
 
 
