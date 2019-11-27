@@ -43,9 +43,10 @@ xml2mask <xml_file> [options]
 One of the following must be specified as command-line options:
 
 1. `--image <svs_file>`: use the lowest available resolution in the specified histology image file (must have .svs extension).
-2. `--image auto`: use the lowest available resolution in the histology file that is next to the xml file and has the same filename. (The histology image must have .svs extension.)
-3. `--scale 0.1 0.1`: the size of the binary mask will be 10% x 10% of the original size of the histology image at the highest available resolution. The numbers represent scaling along the horizontal and the vertical axes, respectively.
-4. `--target 3000 2000`: sets a precise value for the output shape. Behind the scenes, these are used to calculate scaling factors for the histology image.
+2. `--image auto`: use the lowest available resolution in the histology file that is next to the xml file and has the same filename. (The histology image must have .svs extension.) If --tile is specified, this selects the highest available resolution.
+3. `--scale 0.1 0.1`: the size of the binary mask will be 10% x 10% of the original size of the histology image at the highest available resolution. The numbers represent scaling along the horizontal (x) and the vertical (y) axes, respectively.
+4. `--target 3000 2000`: sets a precise value for the output shape. Behind the scenes, these are used to calculate scaling factors for the histology image. If --scale is also specified, the target shape is further scaled by the specified factors.
+5. `--image <svs_file>/auto [--scale 0.5 [0.5]] --tile 14500 8500 1000 1000`: Take the highest-resolution image from the specified SVS image file, scale it by (x=50%, y=50%) and create a binary mask for a 1000x1000 pixel large tile, the top-left corner of which is at x=14500 y=8500 in the scaled image. Note that the scale parameter is optional.
 
 
 ## Uninstallation
