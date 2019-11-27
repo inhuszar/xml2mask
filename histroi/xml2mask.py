@@ -40,15 +40,23 @@ def set_args(parser):
 
     # Optional argument groups
     numargs = parser.add_argument_group("Numerical modulators")
-    numargs.add_argument("--scale", type=float, default=[1, 1], nargs="+",
+    numargs.add_argument("--scale", metavar=("<x>", "<y>"), type=float,
+                         default=[1, 1], nargs="+",
                          help="Scaling factors for the x (hor.) and y (vert.) "
                               "coordinates.")
-    numargs.add_argument("--target", type=int, default=None, nargs=2,
+    numargs.add_argument("--target", metavar=("<height>", "<width>"), type=int,
+                         default=None, nargs=2,
                          help="Target mask shape (vertical, horizontal).")
-    numargs.add_argument("--image", default=None, nargs="+",
+    numargs.add_argument("--image", metavar=("<file>/\"auto\"/<x>", "<y>"),
+                         default=None, nargs="+",
                          help="Original image shape (vertical, horizontal).")
-    numargs.add_argument("--fill", type=int, default=255,
+    numargs.add_argument("--fill", metavar="<value>", type=int, default=255,
                          help="Mask fill value for the ROI. (Default: 255)")
+    numargs.add_argument("--tile", type=int, nargs=4, default=None,
+                         required=False, metavar=("<x>", "<y>", "<width>",
+                                                  "<height>"),
+                         help="Export mask for a specific (scaled) tile. "
+                              "The --image option must also be specified.")
 
     boolargs = parser.add_argument_group("Boolean modulators")
     boolargs.add_argument("--display", action="store_true", default=False,
@@ -59,14 +67,15 @@ def set_args(parser):
                           help="Do not save polygonal selection object.")
     boolargs.add_argument("--nomask", help="Do not save binary ROI mask.",
                           action="store_true", default=False)
-    boolargs.add_argument("--verbose", metavar="level", default=40,
+    boolargs.add_argument("--verbose", metavar="<level>", default=40,
                           type=int, help="Verbosity level (0-40, default: 40).")
 
     strargs = parser.add_argument_group("String modulators")
-    strargs.add_argument("--out", help="Alternative output directory "
-                                       "(without filename!). Default: "
-                                       "directory of the input file.",
-                         type=str, default=None, required=False)
+    strargs.add_argument("--out", metavar="<outdir>", type=str, default=None,
+                         required=False,
+                         help="Alternative output directory " \
+                              "(without filename!). Default: " \
+                              "directory of the input file.")
 
 
 def main(p):
@@ -77,6 +86,7 @@ def main(p):
         "original_shape": p.image,
         "scale": p.scale,
         "target_shape": p.target,
+        "tile": None,
         "csv": not p.nocsv,
         "bin": not p.nobin,
         "mask": not p.nomask,
@@ -95,8 +105,9 @@ def main(p):
         if os.path.isfile(imgarg):
             import openslide
             slideobj = openslide.open_slide(imgarg)
+            dimlevel = 0 if p.tile else -1
             tshape = options["target_shape"] \
-                     or slideobj.level_dimensions[-1][::-1]
+                     or slideobj.level_dimensions[dimlevel][::-1]
             options.update({
                 "original_shape": slideobj.dimensions[::-1],
                 "target_shape": tshape
@@ -105,8 +116,9 @@ def main(p):
             imgarg = os.path.splitext(p.xml_file)[0] + ".svs"
             import openslide
             slideobj = openslide.open_slide(imgarg)
+            dimlevel = 0 if p.tile else -1
             tshape = options["target_shape"] \
-                     or slideobj.level_dimensions[-1][::-1]
+                     or slideobj.level_dimensions[dimlevel][::-1]
             options.update({
                 "original_shape": slideobj.dimensions[::-1],
                 "target_shape": tshape
@@ -125,6 +137,12 @@ def main(p):
                          "definition, or 'auto' for automatic inference from "
                          "adjacent SVS file, or path to the original image "
                          "file.")
+
+    if p.tile:
+        if p.image is None:
+            raise AttributeError("The --image option must be specified if the "
+                                 "--tile option is used.")
+        options.update({"tile": tuple(int(val) for val in p.tile)})
 
     roi.process(p.xml_file, **options)
     if p.verbose > 0:

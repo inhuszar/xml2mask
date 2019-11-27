@@ -173,7 +173,7 @@ def process(xmlfile, *xmlfiles, **options):
                     mask = create_mask(
                         selection, original_shape=p.original_shape,
                         target_shape=p.target_shape, scale_x=scale_x,
-                        scale_y=scale_y, fill_value=p.fill_value)
+                        scale_y=scale_y, tile=p.tile, fill_value=p.fill_value)
                     # Display binary mask
                     if p.display:
                         plt.imshow(mask, cmap="gray", aspect="equal")
@@ -396,12 +396,71 @@ def fix_polygon(*polygons):
         return fixed
 
 
+def rasterise(geom, canvas, fill_value, xmin, ymin, scale_x, scale_y, mode):
+    """
+    Rasterise a geometrical object on a standard canvas (zero-offset,
+    scaled to target).
+
+    :param geom: geometrical object
+    :type geom: shapely.geometry.Polygon
+    :param canvas: raster output (2D array)
+    :type canvas: np.ndarray
+    :param fill_value: value of the foreground
+    :type fill_value: int
+    :param xmin: leftmost horizontal coordinate of the object
+    :type xmin: int
+    :param ymin: vertical coordinate of the object that is closest to the bottom
+    :type ymin: int
+    :param scale_x: horizontal scaling factor (output/original)
+    :type scale_x: float
+    :param scale_y: vertical scaling factor (output/original)
+    :type scale_y: float
+    :param mode:
+        "exterior": the shape outlines are used to rasterise a geometrical
+        object; "interior": the inner contours are used to rasterise holes in
+        a geometrical object
+    :type mode: Union["exterior", "interior"]
+
+    :returns: canvas with the rasterised geometrical object
+    :rtype: np.ndarray
+
+    """
+    def _rasterise_convex(ex, ey, canvas, fill_value, xmin, ymin,
+                          scale_x, scale_y):
+        ex = np.asarray(ex) * scale_x
+        ex = np.minimum(np.maximum(0, ex - xmin), canvas.shape[1] - 1)
+        ey = np.asarray(ey) * scale_y
+        ey = np.minimum(np.maximum(0, ey - ymin), canvas.shape[0] - 1)
+        rr, cc = draw_polygon(ey, ex, canvas.shape)
+        canvas[rr, cc] = fill_value
+        return canvas
+
+    if hasattr(geom, "geoms"):
+        for geom in geom.geoms:
+            canvas = rasterise(geom, canvas, fill_value, xmin, ymin,
+                               scale_x, scale_y, mode)
+    else:
+        if mode == "exterior":
+            ex, ey = geom.exterior.xy
+            canvas = _rasterise_convex(ex, ey, canvas, fill_value,
+                                       xmin, ymin, scale_x, scale_y)
+        elif mode == "interior":
+            for interior in geom.interiors:
+                ex, ey = interior.xy
+                canvas = _rasterise_convex(ex, ey, canvas, fill_value,
+                                           xmin, ymin, scale_x, scale_y)
+        else:
+            raise AttributeError("Invalid rasterisation mode.")
+
+    return canvas
+
+
 def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
-                scale_y=1, invert=False, fill_value=1):
+                scale_y=1, invert=False, tile=None, fill_value=1):
     """
     Creates an 8-bit binary mask based on the net polygonal selection.
     Depending on the exact specification of the parameters, the function may
-    return te mask in the following formats:
+    return the mask in the following formats:
 
     1. Full image mask (covering the entire FOV of the histological slide)
     2. Cropped image mask (confined to the rectangular bounds of the selection)
@@ -433,12 +492,17 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
         setting this equal to scale_x. Note that the output image size is
         calculated by rounding, and therefore it may differ from the expected
         matrix size.
-    :param scale_y: Number
+    :type scale_y: Number
     :param invert:
         If False (default), the ROI will be assigned 1, whereas the rest of
         the image will be assigned 0. Turn this option on for a reverse
         assignment of mask values.
     :type invert: bool
+    :param tile:
+        If specified, the mask is restricted to a rectangular tile of the
+        scaled input domain that is specified by the x and y coordinates of
+        the tile as well as its width and height.
+    :type tile: tuple[int, int, int, int]
     :param fill_value: Value (1-255) of the mask in the ROI. (Default=1)
     :type fill_value: int
 
@@ -456,55 +520,38 @@ def create_mask(selection, original_shape=None, target_shape=None, scale_x=1,
             scale_y, scale_x = np.divide(target_shape, shape)
 
     # Define FOV
-    if original_shape is None:
-        xmin, ymin, xmax, ymax = selection.bounds
-        xmin = int(round(xmin * scale_x))
-        ymin = int(round(ymin * scale_y))
-        xmax = int(round(xmax * scale_x))
-        ymax = int(round(ymax * scale_y))
-        shape = [int(dim) for dim in (ymax - ymin + 1, xmax - xmin + 1)]
+    if tile:
+        logger.info("FOV is obtained from the following tile specification "
+                    "(pixels): {}".format(tile))
+        xmin, ymin, width, height = tile
+        xmax = xmin + width - 1
+        ymax = ymin + height - 1
+
     else:
-        xmin = 0
-        ymin = 0
-        xmax = int(round(original_shape[1] * scale_x)) - 1
-        ymax = int(round(original_shape[0] * scale_y)) - 1
-        shape = (ymax - ymin + 1, xmax - xmin + 1)
+        if original_shape is None:
+            xmin, ymin, xmax, ymax = selection.bounds
+            xmin = int(round(xmin * scale_x))
+            ymin = int(round(ymin * scale_y))
+            xmax = int(round(xmax * scale_x))
+            ymax = int(round(ymax * scale_y))
+
+        else:
+            xmin = 0
+            ymin = 0
+            xmax = int(round(original_shape[1] * scale_x)) - 1
+            ymax = int(round(original_shape[0] * scale_y)) - 1
+
+    shape = (int(ymax - ymin + 1), int(xmax - xmin + 1))
     logger.info("Binary mask FOV (pixels): {}".format(shape))
 
     # Define canvas
     canvas = np.zeros(shape, dtype=np.uint8, order="C")
 
-    # Fill exterior contour
-    if hasattr(selection, "geoms"):
-        for geom in selection.geoms:
-            ex, ey = geom.exterior.xy
-            ex = np.asarray(ex) * scale_x
-            ey = np.asarray(ey) * scale_y
-            rr, cc = draw_polygon(ey - ymin, ex - xmin, shape)
-            canvas[rr, cc] = fill_value
-    else:
-        ex, ey = selection.exterior.xy
-        ex = np.asarray(ex) * scale_x
-        ey = np.asarray(ey) * scale_y
-        rr, cc = draw_polygon(ey - ymin, ex - xmin, shape)
-        canvas[rr, cc] = fill_value
-
-    # Clear internal contours
-    if hasattr(selection, "geoms"):
-        for geom in selection.geoms:
-            for interior in geom.interiors:
-                ix, iy = interior.xy
-                ix = np.asarray(ix) * scale_x
-                iy = np.asarray(iy) * scale_y
-                rr, cc = draw_polygon(iy - ymin, ix - xmin, shape)
-                canvas[rr, cc] = 0
-    else:
-        for interior in selection.interiors:
-            ix, iy = interior.xy
-            ix = np.asarray(ix) * scale_x
-            iy = np.asarray(iy) * scale_y
-            rr, cc = draw_polygon(iy - ymin, ix - xmin, shape)
-            canvas[rr, cc] = 0
+    # Fill exterior contour and clear internal contours
+    canvas = rasterise(selection, canvas, fill_value, xmin, ymin,
+                       scale_x, scale_y, mode="exterior")
+    canvas = rasterise(selection, canvas, 0, xmin, ymin,
+                       scale_x, scale_y, mode="interior")
 
     if invert:
         canvas = fill_value - canvas
