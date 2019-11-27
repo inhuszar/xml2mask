@@ -1,4 +1,4 @@
-# xml2mask
+# xml2mask v2.0
 
 Converts XML annotation files from Aperio Image Analysis to binary masks.
 
