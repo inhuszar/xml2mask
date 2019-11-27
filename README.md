@@ -46,7 +46,7 @@ xml2mask my_annotations.xml --resolution high --tile 29000 17000 2000 2000 --his
 <span style="color:red">Important:</span> do not forget to activate the conda environment before using the above command (see installation step #5).
 
 ### Options
-One of the following must be specified as command-line options:
+The following may be specified as command-line options (either alone or in combination):
 
 1. `--image <svs_file>`: specifies the location of the concomitant SVS file (the actual histology image). If the --image argument is not given, the script will assume that it is next to the XML file and has an identical name.
 2. `--resolution high/low/0/1/2`: Specifies which of the resolution levels of the SVS files the program will use. Default=low. The low resolution is approximately 3000x2000 pixels large and is suitable for generating whole-slide annotation masks. The high option corresponds to the highest resolution (image size: 60k x 50k pixels), which is suitable for creating annotation masks for smaller tiles (2000 x 2000). Usually there are 3 resolution levels in an SVS file, low=2 (or -1), and high=0.
