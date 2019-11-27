@@ -12,7 +12,7 @@ Converts XML annotation files from Aperio Image Analysis to binary masks.
 	cd xml2mask
 	```
 
-4. Create new conda environment from the one of the provided environment files:
+4. Create new conda environment from one of the provided environment files:
 
 	```
 	conda env create -f environment_macosx.yml
@@ -30,12 +30,14 @@ Converts XML annotation files from Aperio Image Analysis to binary masks.
 	python setup.py install
 	```
 
+7. Restart the terminal, and don't forget to activate the histroi environment before running the program.
+
 ## Usage
 ### Syntax
 ```
 xml2mask <xml_file> [options]
 ```
-<span style="color:red">Important:</span> do not forgetto activate the conda environment before using the above command (see installation step #4).
+<span style="color:red">Important:</span> do not forget to activate the conda environment before using the above command (see installation step #5).
 
 ### Setting the output shape
 One of the following must be specified as command-line options:
