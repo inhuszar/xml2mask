@@ -37,16 +37,25 @@ Converts XML annotation files from Aperio Image Analysis to binary masks.
 ```
 xml2mask <xml_file> [options]
 ```
+
+Example:
+```
+xml2mask my_annotations.xml --resolution high --tile 29000 17000 2000 2000 --histo --out my_annotations/results
+```
+
 <span style="color:red">Important:</span> do not forget to activate the conda environment before using the above command (see installation step #5).
 
-### Setting the output shape
+### Options
 One of the following must be specified as command-line options:
 
-1. `--image <svs_file>`: use the lowest available resolution in the specified histology image file (must have .svs extension).
-2. `--image auto`: use the lowest available resolution in the histology file that is next to the xml file and has the same filename. (The histology image must have .svs extension.) If --tile is specified, this selects the highest available resolution.
-3. `--scale 0.1 0.1`: the size of the binary mask will be 10% x 10% of the original size of the histology image at the highest available resolution. The numbers represent scaling along the horizontal (x) and the vertical (y) axes, respectively.
-4. `--target 3000 2000`: sets a precise value for the output shape. Behind the scenes, these are used to calculate scaling factors for the histology image. If --scale is also specified, the target shape is further scaled by the specified factors.
-5. `--image <svs_file>/auto [--scale 0.5 [0.5]] --tile 14500 8500 1000 1000`: Take the highest-resolution image from the specified SVS image file, scale it by (x=50%, y=50%) and create a binary mask for a 1000x1000 pixel large tile, the top-left corner of which is at x=14500 y=8500 in the scaled image. Note that the scale parameter is optional.
+1. `--image <svs_file>`: specifies the location of the concomitant SVS file (the actual histology image). If the --image argument is not given, the script will assume that it is next to the XML file and has an identical name.
+2. `--resolution high/low/0/1/2`: Specifies which of the resolution levels of the SVS files the program will use. Default=low. The low resolution is approximately 3000x2000 pixels large and is suitable for generating whole-slide annotation masks. The high option corresponds to the highest resolution (image size: 60k x 50k pixels), which is suitable for creating annotation masks for smaller tiles (2000 x 2000). Usually there are 3 resolution levels in an SVS file, low=2 (or -1), and high=0.
+3. `--scale 0.1 0.1`: the size of the binary mask will be 10% x 10% of the original size of the histology image at the chosen resolution level (low-res by default). The numbers represent scaling along the horizontal (x) and the vertical (y) axes, respectively. The default scaling factors are (x=1, y=1).
+4. `--target 3000 2000`: sets a precise value for the output shape. Behind the scenes, these are used to calculate scaling factors for the histology image. If --scale is also specified, the target shape specification takes precedence and overrides the scaling factors.
+5. `--tile 29000 17000 2000 2000`: creates a binary mask for a (x=2000 x y=2000) pixel large tile of the original histology image, the top-left corner of which is at (x=29000px, y=17000px). The coordinates and the size of the tile must be specified with respect to the output reference frame, i.e. taking all scaling into account. If no scaling or target shape is specified, and `--resolution high` is set, the coordinates and tile sizes are in the reference frame of the highest-
+resolution histology image.
+6. `--out outdir`: specifies the output directory where all files will be saved to. The output directory may or may not exist at the time of executing the command, but it must not contain a file name specification. If `--out` is not given, the out will be saved next to the input XML file.
+7. `--histo`: saves a histology image output next to the annotation masks with a matching FOV, so that the overlap of the two can be verified by eye.
 
 
 ## Uninstallation
