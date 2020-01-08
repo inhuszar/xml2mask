@@ -4,18 +4,21 @@ import os
 import sys
 from setuptools import setup, find_packages
 
-dylibs = os.getenv("DYLD_FALLBACK_LIBRARY_PATH")
-if not dylibs or ("/usr/lib" not in dylibs.split(":")):
-      if sys.platform == "darwin":
-            configfile = os.path.expanduser("~/.bash_profile")
-      elif sys.platform in ("linux", "linux2"):
-            configfile = os.path.expanduser("~/.bashrc")
-      else:
-            raise OSError("Unsupported platform.")
-      with open(configfile, "a") as outfile:
-            outfile.write("\n#Added by the xml2mask installer.\n")
-            outfile.write("export DYLD_FALLBACK_LIBRARY_PATH="
-                          "/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH\n")
+# The Shapely library depends on system-wide dylibs on MacOS
+if sys.platform == "darwin":
+      dylibs = os.getenv("DYLD_FALLBACK_LIBRARY_PATH")
+      configfile = os.path.expanduser("~/.bash_profile")
+      syslib = "/usr/lib"
+      if not dylibs or (syslib not in dylibs.split(":")):
+            with open(configfile, "a") as outfile:
+                  outfile.write("\n#Added by the xml2mask installer.\n")
+                  outfile.write("export DYLD_FALLBACK_LIBRARY_PATH="
+                                "{}:$DYLD_FALLBACK_LIBRARY_PATH\n".format(syslib))
+
+elif sys.platform in ("linux", "linux2"):
+      pass  # Nothing to do
+else:
+      raise OSError("Unsupported platform.")
 
 setup(name="xml2mask",
       version="2.0",
@@ -26,6 +29,4 @@ setup(name="xml2mask",
       license="MIT",
       packages=find_packages(),
       py_modules=["histroi.roi", "histroi.xml2mask"],
-      entry_points={"console_scripts": ["xml2mask=histroi.xml2mask:init"]},
-      install_requires=["numpy", "pandas", "dill", "pillow", "attrdict",
-                        "geos", "shapely", "scikit-image", "openslide-python"])
+      entry_points={"console_scripts": ["xml2mask=histroi.xml2mask:init"]})
